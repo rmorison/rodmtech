@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load i18n  mezzanine_tags staticfiles%}
+{% load i18n mezzanine_tags staticfiles%}
+{% load blog_tags keyword_tags i18n mezzanine_tags %}
 {% block meta_title %}{% trans "Home" %}{% endblock %}
 {% block title %}{% trans "Home" %}{% endblock %}
 {% block breadcrumb_wrapper %}
@@ -7,11 +8,6 @@
 
 {% block title_wrapper %}
 {% endblock %}
-
-{% block breadcrumb_menu %}
-<li class="active">{% trans "Home" %}</li>
-{% endblock %}
-
 
 {% block all_content %}
 <section id="{% block section_id %}featured{% endblock %}">
@@ -29,35 +25,23 @@
 		<div class="row">
 			<div class="col-lg-12">
 	<!-- Slider -->
+        {% if gallery %}{% with gallery.images.all as images %}
+</br>
+
         <div id="main-slider" class="flexslider">
             <ul class="slides">
+              {% for image in images %}
               <li>
-                <img src="{% static "img/slides/1.jpg" %}" alt="" />
+                <img src="{{ image.file.url }}" alt="" />
                 <div class="flex-caption">
-                    <h3>Modern Design</h3> 
-					<p>Duis fermentum auctor ligula ac malesuada. Mauris et metus odio, in pulvinar urna</p> 
-					<a href="#" class="btn btn-theme">Learn More</a>
+                    <h3>{{ image.description }}</h3> 
                 </div>
               </li>
-              <li>
-                <img src="{% static "img/slides/2.jpg" %}" alt="" />
-                <div class="flex-caption">
-                    <h3>Fully Responsive</h3> 
-					<p>Sodales neque vitae justo sollicitudin aliquet sit amet diam curabitur sed fermentum.</p> 
-					<a href="#" class="btn btn-theme">Learn More</a>
-                </div>
-              </li>
-              <li>
-                <img src="{% static "img/slides/3.jpg" %}" alt="" />
-                <div class="flex-caption">
-                    <h3>Clean & Fast</h3> 
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit donec mer lacinia.</p> 
-					<a href="#" class="btn btn-theme">Learn More</a>
-                </div>
-              </li>
+              {% endfor %}
             </ul>
         </div>
 	<!-- end slider -->
+        {% endwith %}{% endif %}
 			</div>
 		</div>
 	</div>	
@@ -68,92 +52,32 @@
 {% block right_wrapper %}
 {% endblock %}
 </section>
-<section class="callaction">
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="big-cta">
-					<div class="cta-text">
-						<h2><span>Moderna</span> Free Mezzanine Business theme</h2>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	</section>
+{% blog_recent_posts 4 as featured_posts %}
+{% if featured_posts %}
 <section id="content">
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
+				<h4 class="heading">Recent Posts</h4>
 				<div class="row">
+                                        {% for blog_post in featured_posts %}
 					<div class="col-lg-3">
 						<div class="box">
 							<div class="box-gray aligncenter">
-								<h4>Fully responsive</h4>
-								<div class="icon">
-								<i class="fa fa-desktop fa-3x"></i>
-								</div>
+								<h3><a href="{{ blog_post.get_absolute_url }}">{{ blog_post.title }}</a></h3>
+                                                                {% if settings.BLOG_USE_FEATURED_IMAGE and blog_post.featured_image %}
+			                                        <a href="{{ blog_post.get_absolute_url }}">
+				                                  <img class="" src="{{ MEDIA_URL }}{{blog_post.featured_image}}">
+			                                        </a>
+			                                        {% endif %}
 								<p class="">
-								 Voluptatem accusantium doloremque laudantium sprea totam rem aperiam.
+                                                                  {{ blog_post.description_from_content|truncatewords_html:20|safe }}
 								</p>
 									
 							</div>
-							<div class="box-bottom">
-								<a href="#">Learn more</a>
-							</div>
 						</div>
 					</div>
-					<div class="col-lg-3">
-						<div class="box">
-							<div class="box-gray aligncenter">
-								<h4>Modern Style</h4>
-								<div class="icon">
-								<i class="fa fa-pagelines fa-3x"></i>
-								</div>
-								<p>
-								 Voluptatem accusantium doloremque laudantium sprea totam rem aperiam.
-								</p>
-									
-							</div>
-							<div class="box-bottom">
-								<a href="#">Learn more</a>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-3">
-						<div class="box">
-							<div class="box-gray aligncenter">
-								<h4>Customizable</h4>
-								<div class="icon">
-								<i class="fa fa-edit fa-3x"></i>
-								</div>
-								<p>
-								 Voluptatem accusantium doloremque laudantium sprea totam rem aperiam.
-								</p>
-									
-							</div>
-							<div class="box-bottom">
-								<a href="#">Learn more</a>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-3">
-						<div class="box">
-							<div class="box-gray aligncenter">
-								<h4>Valid HTML5</h4>
-								<div class="icon">
-								<i class="fa fa-code fa-3x"></i>
-								</div>
-								<p>
-								 Voluptatem accusantium doloremque laudantium sprea totam rem aperiam.
-								</p>
-									
-							</div>
-							<div class="box-bottom">
-								<a href="#">Learn more</a>
-							</div>
-						</div>
-					</div>
+                                        {% endfor %}
 				</div>
 			</div>
 		</div>
@@ -165,66 +89,9 @@
 			</div>
 		</div>
 		<!-- end divider -->
-		<!-- Portfolio Projects -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h4 class="heading">Recent Works</h4>
-				<div class="row">
-					<section id="projects">
-					<ul class="portfolio" id="thumbs">
-						<!-- Item Project and Filter Name -->
-						<li data-type="web" data-id="id-0" class="col-lg-3 design">
-						<div class="item-thumbs">
-						<!-- Fancybox - Gallery Enabled - Title - Full Image -->
-						<a href="{% static "img/works/1.jpg" %}" title="Work 1" data-fancybox-group="gallery" class="hover-wrap fancybox">
-						<span class="overlay-img"></span>
-						<span class="overlay-img-thumb font-icon-plus"></span>
-						</a>
-						<!-- Thumb Image and Description -->
-						<img alt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus quis elementum odio. Curabitur pellentesque, dolor vel pharetra mollis." src="{% static "img/works/1.jpg" %}">
-						</div>
-						</li>
-						<!-- End Item Project -->
-						<!-- Item Project and Filter Name -->
-						<li data-type="icon" data-id="id-1" class="item-thumbs col-lg-3 design">
-						<!-- Fancybox - Gallery Enabled - Title - Full Image -->
-						<a href="{% static "img/works/2.jpg" %}" title="Work 2" data-fancybox-group="gallery" class="hover-wrap fancybox">
-						<span class="overlay-img"></span>
-						<span class="overlay-img-thumb font-icon-plus"></span>
-						</a>
-						<!-- Thumb Image and Description -->
-						<img alt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus quis elementum odio. Curabitur pellentesque, dolor vel pharetra mollis." src="{% static "img/works/2.jpg" %}">
-						</li>
-						<!-- End Item Project -->
-						<!-- Item Project and Filter Name -->
-						<li data-type="illustrator" data-id="id-2" class="item-thumbs col-lg-3 photography">
-						<!-- Fancybox - Gallery Enabled - Title - Full Image -->
-						<a href="{% static "img/works/3.jpg" %}" title="Work 3" data-fancybox-group="gallery" class="hover-wrap fancybox">
-						<span class="overlay-img"></span>
-						<span class="overlay-img-thumb font-icon-plus"></span>
-						</a>
-						<!-- Thumb Image and Description -->
-						<img alt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus quis elementum odio. Curabitur pellentesque, dolor vel pharetra mollis." src="{% static "img/works/3.jpg" %}">
-						</li>
-						<!-- End Item Project -->
-						<!-- Item Project and Filter Name -->
-						<li data-type="illustrator" data-id="id-2" class="item-thumbs col-lg-3 photography">
-						<!-- Fancybox - Gallery Enabled - Title - Full Image -->
-						<a href="{% static "img/works/4.jpg" %}" title="Work 4" data-fancybox-group="gallery" class="hover-wrap fancybox">
-						<span class="overlay-img"></span>
-						<span class="overlay-img-thumb font-icon-plus"></span>
-						</a>
-						<!-- Thumb Image and Description -->
-						<img alt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus quis elementum odio. Curabitur pellentesque, dolor vel pharetra mollis." src="{% static "img/works/4.jpg" %}">
-						</li>
-						<!-- End Item Project -->
-					</ul>
-					</section>
-				</div>
-			</div>
-		</div>
+		
 
 	</div>
 	</section>
-
+{% endif %}
 {% endblock %}
