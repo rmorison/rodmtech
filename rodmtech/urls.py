@@ -9,6 +9,15 @@ from mezzanine.core.views import direct_to_template
 from mezzanine.conf import settings
 from mezzanine.galleries.models import Gallery
 
+from django.views.generic.base import TemplateView
+
+class HomePageView(TemplateView):
+    template_name = "index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        context['gallery'] =  Gallery.objects.filter(title='Gallery').first()
+        return context
 
 admin.autodiscover()
 
@@ -38,10 +47,7 @@ urlpatterns += [
     # one homepage pattern, so if you use a different one, comment this
     # one out.
 
-    url("^$", direct_to_template, 
-        {"template": "index.html", 
-         "extra_context": {'gallery': Gallery.objects.filter(title='Gallery').first()}},
-        name="home"),
+    url("^$", HomePageView.as_view(), name="home"),
 
     # HOMEPAGE AS AN EDITABLE PAGE IN THE PAGE TREE
     # ---------------------------------------------
