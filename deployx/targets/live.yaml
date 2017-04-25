@@ -1,0 +1,66 @@
+
+domain: rodmtech.net
+timezone: America/New_York
+locale: en_US.UTF-8
+language: en_US:en
+
+roledefs:
+    lb: [rodmtech]
+    app: [rodmtech]
+    db: []
+
+hostenvs:
+    rodmtech: {ip: 127.0.0.1, ssh_host: morison.io, ssh_user: webby}
+
+roleenvs:
+    lb:
+        packages: [ntp, nginx]
+        httpd_user: www-data
+        connection_method: epoll
+        workers: 2
+        worker_connections: 1024
+        extra_domains: rodmtech.morison.io, morison.io, mail.morison.io
+        is_default: yes
+        ssl_cert: yes
+        ssl_altnames: [rodmtech.morison.io]
+        htpasswd_file:
+        serve_frontend: no
+    app:
+        user: webby
+        admins: rod@rodmtech.net
+        packages: [ntp, git, subversion, mercurial, supervisor, python-pip, python3-dev,
+                  libjpeg-dev, libpng3, libfreetype6-dev,  libffi-dev, python-lxml,
+                  python-cffi, libcairo2, libpango1.0-0, libgdk-pixbuf2.0-0,
+                  shared-mime-info, libpq-dev, postgresql-client, memcached, redis-server]
+        pips: [virtualenvwrapper]
+        workon_home: /home/webby/pyves
+        python: /usr/bin/python3
+        project_name: rodmtech-live
+        repo_name: rodmtech
+        django_name: rodmtech
+        static_prefix: /home/webby/static
+        media_prefix: /home/webby/media
+        build_frontend: no
+        frontend_dir: ../frontend
+        node_version: "6.10"
+        npm_global: ["@angular/cli", typings]
+        vcs: git
+        repo_url: https://github.com/rmorison/rodmtech.git
+        repo_host_key: "|1|KFSe4FcvsQ/EmsdJm0KSJ9qejtA=|Tai+vmeADHWZgwGPUNhJFvw13gI= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+        branch: master
+        requirements_dir: requirements
+        requirements_txt: [project.txt, live.txt]
+        wsgi_port: 10000
+        workers: 2
+        debug: no
+        secret_key: !decrypt HL65cXvniXesOYwxz8reFHt7rLllQPMnT1WwQ8FjOKzPgEfMCqMEfgf7G2i/q5R8YwrwIupYqvBWxmxu2Xh+K4eWkbbI97+S6r1NdSKtRoM=
+        db_rootuser: postgres
+        db_name: rodmtech_live
+        db_user: rodmtech_live
+        db_pass: !decrypt E1nusawRzViFs/+6QFbvDObtzz7o5XLkWCt4VunoX63sUFtDZQymOOYSiKigdXlD
+        db_host: localhost
+        db_port: 5432
+        allowed_hosts: localhost, 174.142.192.143, rodmtech.net, rodmtech.morison.io
+        admin_email: rod@rodmtech.net
+        redis_cache_db: 1
+        max_upload_size: 40*1000*1000

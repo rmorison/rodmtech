@@ -1,0 +1,5 @@
+fabric
+jinja2
+PyYAML
+Fabex
+htpasswd

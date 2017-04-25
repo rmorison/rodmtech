@@ -1,0 +1,61 @@
+
+# lb
+nginx.conf:
+    local_path: nginx.conf
+    remote_path: /etc/nginx/nginx.conf
+    reload_command: service nginx restart
+    owner: root:root
+nginx-site.conf:
+    local_path: nginx-site.conf
+    remote_path: /etc/nginx/sites-available/{{project_name}}
+    reload_command: >
+      cd /etc/nginx/sites-enabled
+      && ln -s -f -v ../sites-available/{{project_name}} .
+      && service nginx restart
+    owner: root:root
+nginx-htpasswd:
+    local_path: htpasswd
+    remote_path: /etc/nginx/{{htpasswd_file}}
+    reload_command: service nginx reload
+    owner: root:root
+
+# app
+virtualenvrc:
+    local_path: virtualenvrc
+    remote_path: .virtualenvrc
+supervisord-uwsgi:
+    local_path: supervisord-uwsgi.conf
+    remote_path: "/etc/supervisor/conf.d/{{project_name}}-uwsgi.conf"
+    reload_command: supervisorctl update
+    owner: root
+local_settings:
+    local_path: local_settings.py
+    remote_path: "{{workon_home}}/{{project_name}}/{{repo_name}}/{{django_name}}/local_settings.py"
+uwsgi.ini:
+    local_path: uwsgi.ini
+    remote_path: "{{workon_home}}/{{project_name}}/{{repo_name}}/{{django_name}}/uwsgi.ini"
+
+# cache
+memcached.conf:
+    local_path: memcached.conf
+    remote_path: "/etc/memcached.conf"
+    reload_command: service memcached restart
+    owner: root:root
+
+# db
+dbuser.sql:
+    local_path: dbuser.sql
+    remote_path: /tmp/dbuser.sql
+    reload_command: psql --host={{db_host}} --port={{db_port}} --username={{db_rootuser}} --file=/tmp/dbuser.sql postgres
+dbinit.sql:
+    local_path: dbinit.sql
+    remote_path: /tmp/dbinit.sql
+    reload_command: PGPASSWORD='{{db_pass}}' psql --host={{db_host}} --port={{db_port}} --username={{db_user}} --file=/tmp/dbinit.sql postgres
+dbwipe.sql:
+    local_path: dbwipe.sql
+    remote_path: /tmp/dbwipe.sql
+    reload_command: PGPASSWORD='{{db_pass}}' psql --host={{db_host}} --port={{db_port}} --username={{db_user}} --file=/tmp/dbwipe.sql postgres
+test_dbreset.sql:
+    local_path: test_dbreset.sql
+    remote_path: /tmp/test_dbreset.sql
+    reload_command: PGPASSWORD='{{db_pass}}' psql --host={{db_host}} --port={{db_port}} --username={{db_user}} --file=/tmp/test_dbreset.sql postgres

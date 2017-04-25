@@ -1,0 +1,4 @@
+
+export WORKON_HOME="{{workon_home}}"
+export PROJECT_HOME="{{workon_home}}"
+source /usr/local/bin/virtualenvwrapper.sh
