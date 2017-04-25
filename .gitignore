@@ -5,3 +5,5 @@
 .coverage
 local_settings.py
 /static
+uwsgi.ini
+__pycache__
